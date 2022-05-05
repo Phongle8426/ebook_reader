@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "847588198573",
+    "project_id": "ebookreader-5bd9b",
+    "storage_bucket": "ebookreader-5bd9b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:847588198573:android:dcde7998dd4b4fb0319e24",
+        "android_client_info": {
+          "package_name": "com.example.ebook_reader"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "847588198573-lplle9vvi2f1ista1vfc27ubucvc60o2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDP9zEYPpI0eHd-v-sgZJL7EJmzIhLyqBE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "847588198573-lplle9vvi2f1ista1vfc27ubucvc60o2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
