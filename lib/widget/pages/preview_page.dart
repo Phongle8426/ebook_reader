@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:ebook_reader/widget/pages/chapter_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -5,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../../models/book_model.dart';
 import '../../service/database_service.dart';
+import 'listening_page.dart';
 
 class PreviewPage extends StatefulWidget {
   static const routeName = '/PreviewPage';
@@ -48,7 +51,8 @@ class _PreviewPage extends State<PreviewPage>{
                       begin: Alignment.topCenter,
                       end: Alignment.center
                     //,stops: [0.7,0.9]
-                  )),
+                  ),
+              ),
               child: Column(
                 children: [
                   Container(
@@ -181,7 +185,8 @@ class _PreviewPage extends State<PreviewPage>{
                                                       textStyle: TextStyle(
                                                           color: Color.fromRGBO(66, 66, 86, 1)
                                                               .withOpacity(0.9),
-                                                          fontWeight: FontWeight.bold)),
+                                                          fontWeight: FontWeight.bold),
+                                                      fontSize: 10),
                                                 )),
                                           ),
                                           Container(
@@ -464,7 +469,7 @@ class _PreviewPage extends State<PreviewPage>{
                                 onTap: () {
                                   Navigator.of(context).pushNamed(
                                       ChapterPage.routeName,
-                                      arguments: _book.idBook,
+                                      arguments: {'idBook': _book.idBook, 'nameBook': _book.name, 'type': 0},
                                   );
                                 },
                                 child: Container(
@@ -528,7 +533,11 @@ class _PreviewPage extends State<PreviewPage>{
                                               )),
                                         ),
                                         InkWell(
-                                          onTap: (){},
+                                          onTap: (){
+                                            Navigator.of(context).pushNamed(
+                                              ChapterPage.routeName,
+                                              arguments: {'idBook': _book.idBook, 'nameBook': _book.name, 'type': 1},);
+                                          },
                                           child: Container(
                                             //color: Colors.purple,
                                             height: constraints.maxHeight * 0.6,

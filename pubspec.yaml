@@ -35,6 +35,7 @@ dependencies:
   firebase_core: 1.15.0
   firebase_database: 7.0.0
   platform: ^3.1.0
+  audioplayers: ^0.20.1
 
 
   # The following adds the Cupertino Icons font to your application.

@@ -1,10 +1,8 @@
-import 'package:ebook_reader/models/book_model.dart';
+import 'package:ebook_reader/models/chapter_book_model.dart';
+import 'package:ebook_reader/widget/chapter_book_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-import '../../models/book_data.dart';
 import '../../service/database_service.dart';
-import '../chapter_book_widget.dart';
 
 
 class ChapterPage extends StatefulWidget {
@@ -15,18 +13,23 @@ class ChapterPage extends StatefulWidget {
 }
 
 class _ChapterPage extends State<ChapterPage>{
-  List<PreviewBook> _recentBooks = [];
+  List<ChapterBook> _chapterBook = [];
+  late Map recieverMap = Map();
   @override
   void initState() {
     super.initState();
-    _getRecentBooks();
+    Future.delayed(Duration.zero,() {
+      recieverMap = ModalRoute.of(context)?.settings.arguments as Map;
+      print("recieverMap  $recieverMap");
+      _getChapterBooks(recieverMap['idBook']);
+    });
   }
 
-  _getRecentBooks() async {
-    List<PreviewBook> lisst = await DatabaseRealTimeService().getAllBook();
+  _getChapterBooks(String bookId) async {
+    List<ChapterBook> listChapter = await DatabaseRealTimeService().getChapterOfBookById(bookId);
     setState(() {
-      print("boook $lisst");
-      _recentBooks = lisst;
+      print("getChapterOfBookById  $listChapter");
+      _chapterBook = listChapter;
     });
   }
 
@@ -39,7 +42,6 @@ class _ChapterPage extends State<ChapterPage>{
                 colors: [Color.fromRGBO(249, 191, 161, 1), Colors.white],
                 begin: Alignment.topCenter,
                 end: Alignment.center
-              //,stops: [0.7,0.9]
             )),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -51,7 +53,7 @@ class _ChapterPage extends State<ChapterPage>{
                 top: 40,
                 bottom: 20,
               ),
-              child: Text('Ebook Reader',
+              child: Text(recieverMap['nameBook'] ?? '',
                   style: GoogleFonts.portLligatSans(
                     textStyle: Theme.of(context).textTheme.headline1,
                     fontSize: 30,
@@ -60,23 +62,22 @@ class _ChapterPage extends State<ChapterPage>{
                   )
               ),
             ),
+            Icon(
+              recieverMap['type'] == 0 ? Icons.book : Icons.headset,
+              color: Colors.black,
+              size: 50,
+            ),
             Expanded(
+              flex: 1,
               child: Container(
                 padding: EdgeInsets.only(
-                  top: 20,
                   left: 20,
                 ),
+                height: double.infinity,
                 width: double.infinity,
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ChapterBook(_recentBooks),
-                    ],
+                child: ChapterBookWidget(_chapterBook,recieverMap['idBook'] ?? '', recieverMap['type'] ?? 0),
                   ),
                 ),
-              ),
-            )
           ],
         ),
       ),

@@ -1,57 +1,60 @@
+import 'package:ebook_reader/models/chapter_book_model.dart';
+import 'package:ebook_reader/widget/pages/listening_page.dart';
 import 'package:ebook_reader/widget/pages/preview_page.dart';
+import 'package:ebook_reader/widget/pages/reading_page.dart';
 import 'package:flutter/material.dart';
-import '../models/book_model.dart';
 
-class ChapterBook extends StatelessWidget {
-  final List<PreviewBook> bookList;
-  const ChapterBook(this.bookList);
+class ChapterBookWidget extends StatelessWidget {
+  final List<ChapterBook> chapterList;
+  final String idBook;
+  final int type;
+  const ChapterBookWidget(this.chapterList, this.idBook, this.type);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(
-              vertical: 5,
-            ),
-            height: MediaQuery.of(context).size.height * 0.15,
-            child: ListView.builder(
-              itemBuilder: (ctx, i) => GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pushNamed(
-                      PreviewPage.routeName,
-                      arguments: bookList[i].idBook
-                  );
-                },
-                child: Row(
-                  children: [
-                        Container(
-                          margin: EdgeInsets.only(
-                            top: 10,
-                            left: 5,
-                          ),
-                          height: MediaQuery.of(context).size.height * 0.1,
-                          width: MediaQuery.of(context).size.width,
-                          child: Text(
-                          'Chương 1: Hồi Ức đáng nhớ',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                          )
-                          )
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemBuilder: (ctx, i) => GestureDetector(
+              onTap: () {
+                Navigator.of(context).pushNamed(
+                    type == 0 ? ReadingPage.routeName : ListeningPage.routeName,
+                    arguments: {
+                      'idChapter': chapterList[i].idChapter,
+                      'idBook': idBook,
+                      'numberOfChapter': chapterList[i].numberOfChapter,
+                      'chapterName': chapterList[i].chapterName,
+                      'listChapter': chapterList}
+                );
+              },
+              child: Row(
+                children: [
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        margin: EdgeInsets.only(
+                          left: 2,
+                          bottom: 2
+                        ),
+                        padding: EdgeInsets.only(left: 5),
+                        height: MediaQuery.of(context).size.height * 0.05,
+                        width: MediaQuery.of(context).size.width - 30,
+                        decoration: BoxDecoration(
+                          color: Colors.grey,
+                          borderRadius: BorderRadius.only(topRight: Radius.circular(15), bottomRight: Radius.circular(15))
+                        ),
+                        child: Text('Chương ${chapterList[i].numberOfChapter}: ${chapterList[i].chapterName}',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
                         )
-                      ],
-                    )
-                  ),
-
-              itemCount: bookList.length,
-              scrollDirection: Axis.vertical,
-            ),
-          )
-        ],
-      ),
+                        )
+                      )
+                    ],
+                  )
+                ),
+            itemCount: chapterList.length,
+            scrollDirection: Axis.vertical,
+          ),
     );
   }
 }
