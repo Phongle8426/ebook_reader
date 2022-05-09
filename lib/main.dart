@@ -2,6 +2,7 @@ import 'package:ebook_reader/service/database_service.dart';
 import 'package:ebook_reader/utils/themes/theme.dart';
 import 'package:ebook_reader/widget/chapter_book_widget.dart';
 import 'package:ebook_reader/widget/pages/chapter_page.dart';
+import 'package:ebook_reader/widget/pages/filter_kind_book_page.dart';
 import 'package:ebook_reader/widget/pages/home_page.dart';
 import 'package:ebook_reader/widget/pages/listening_page.dart';
 import 'package:ebook_reader/widget/pages/preview_page.dart';
@@ -39,7 +40,8 @@ class MyApp extends StatelessWidget {
             PreviewPage.routeName: (ctx) => const PreviewPage(),
             ChapterPage.routeName: (ctx) => ChapterPage(),
             ReadingPage.routeName: (ctx) => ReadingPage(),
-            ListeningPage.routeName: (ctx) => ListeningPage()
+            ListeningPage.routeName: (ctx) => ListeningPage(),
+            KindBookPage.routeName: (ctx) => KindBookPage()
           }
       )
     );

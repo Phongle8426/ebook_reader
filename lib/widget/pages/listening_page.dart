@@ -24,10 +24,14 @@ class _AudioFileState extends State<ListeningPage> {
     Icons.play_circle_fill,
     Icons.pause_circle_filled,
   ];
+  late Map recieverMap = Map();
 
   @override
   void initState(){
     super.initState();
+    Future.delayed(Duration.zero,() {
+      recieverMap = ModalRoute.of(context)?.settings.arguments as Map;
+    });
     advancedPlayer.onDurationChanged.listen((d) {setState(() {
       _duration = d;
     });});
@@ -79,7 +83,7 @@ class _AudioFileState extends State<ListeningPage> {
 
   Widget slider() {
     return Slider(
-        activeColor: Colors.red,
+        activeColor: Colors.orangeAccent,
         inactiveColor: Colors.grey,
         value: _position.inSeconds.toDouble(),
         min: 0.0,
@@ -214,7 +218,7 @@ class _AudioFileState extends State<ListeningPage> {
                   SizedBox(
                     height: 50,
                   ),
-                Text('Chapter 1: Đấu phá thương khung',
+                Text("Chương ${recieverMap['numberOfChapter']} : ${recieverMap['chapterName']}",
                   style: GoogleFonts.lato(
                       fontWeight: FontWeight.bold,
                       color: Color.fromRGBO(66, 66, 86, 1)),
@@ -271,7 +275,7 @@ class _AudioFileState extends State<ListeningPage> {
                                                     )
                                                 ),
                                                 SizedBox(height: 5,),
-                                                // ChapterBookWidget(recieverMap['listChapter'],recieverMap['idBook'])
+                                                 ChapterBookWidget(recieverMap['listChapter'],recieverMap['idBook'], 1)
                                               ],
                                             ),
                                           ),

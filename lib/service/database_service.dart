@@ -15,9 +15,7 @@ class DatabaseRealTimeService with ChangeNotifier{
   Future<List<PreviewBook>> getAllBook() async{
   DataSnapshot dataSnapshot = await FirebaseDatabase(databaseURL: databaseUrl)
       .reference().child("allBooks").once();
-
    List<PreviewBook> allBooks = [];
-
    if(dataSnapshot.value != null){
      final data = Map<String, dynamic>.from(dataSnapshot.value);
      print("Data: $data");
@@ -46,6 +44,23 @@ class DatabaseRealTimeService with ChangeNotifier{
       }
     print("Phong3: $book");
     return book;
+  }
+
+  Future<List<PreviewBook>> getBookByType(String type) async{
+    DataSnapshot dataSnapshot = await FirebaseDatabase(databaseURL: databaseUrl)
+        .reference().child("allBooks").orderByChild('kindOfBook').equalTo(type).once();
+    List<PreviewBook> allBooks = [];
+    if(dataSnapshot.value != null){
+      final data = Map<String, dynamic>.from(dataSnapshot.value);
+      print("Data: $data");
+      data.forEach((key, value) {
+        Map<String, dynamic> newData = Map<String, dynamic>.from(value);
+        allBooks.add(PreviewBook.fromRTDB(newData));
+      });
+    }
+    _previewBookList = allBooks;
+    notifyListeners();
+    return allBooks;
   }
 
   Future<List<ChapterBook>> getChapterOfBookById(String idBook) async{
