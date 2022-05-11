@@ -48,6 +48,7 @@ class RecentBook extends StatelessWidget {
                             children: [
                               Container(
                                 width: double.infinity,
+                              height: MediaQuery.of(context).size.height * 0.2,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20),
                                   boxShadow: <BoxShadow>[
@@ -61,9 +62,9 @@ class RecentBook extends StatelessWidget {
                                 ),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(20),
-                                  child: Image.asset(
+                                  child: Image.network(
                                     bookList[i].coverImage,
-                                    fit: BoxFit.fill,
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
                               ),

@@ -1,10 +1,8 @@
 import 'package:ebook_reader/models/book_model.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../models/book_data.dart';
 import '../../service/database_service.dart';
 import '../navigation_drawer.dart';
-import '../recent_book_widget.dart';
 import '../trending_book_widget.dart';
 
 

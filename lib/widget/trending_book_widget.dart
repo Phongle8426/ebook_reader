@@ -39,7 +39,7 @@ class TrendingBook extends StatelessWidget {
                           width: MediaQuery.of(context).size.width * 0.18,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(10),
-                            child: Image.asset(
+                            child: Image.network(
                               bookList[i].coverImage,
                               fit: BoxFit.fill,
                             ),

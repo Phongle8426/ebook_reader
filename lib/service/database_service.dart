@@ -24,9 +24,7 @@ class DatabaseRealTimeService with ChangeNotifier{
        allBooks.add(PreviewBook.fromRTDB(newData));
      });
    }
-  _previewBookList = allBooks;
-   notifyListeners();
-    return allBooks;
+    return sortListTrending(allBooks);
   }
 
   Future<PreviewBook> getBookById(String idBook) async{
@@ -99,6 +97,13 @@ class DatabaseRealTimeService with ChangeNotifier{
   List<ChapterBook> sortList(List<ChapterBook> list){
     list.sort((a,b){
       return a.numberOfChapter.compareTo(b.numberOfChapter);
+    });
+    return list;
+  }
+
+  List<PreviewBook> sortListTrending(List<PreviewBook> list){
+    list.sort((a,b){
+      return b.amountOfVisit.compareTo(a.amountOfVisit);
     });
     return list;
   }

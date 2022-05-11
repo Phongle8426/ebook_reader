@@ -111,10 +111,8 @@ class _PreviewPage extends State<PreviewPage>{
                       decoration: BoxDecoration(
                           color: Colors.black,
                           borderRadius: BorderRadius.circular(size.width * 0.05),
-                          image: DecorationImage(
-                            fit: BoxFit.fill,
-                            image: AssetImage('assets/3.jfif'),
-                          ),
+                          image: DecorationImage(image: NetworkImage(_book.coverImage),
+                          fit: BoxFit.cover),
                           boxShadow: [
                             BoxShadow(
                                 color: Color.fromRGBO(203, 201, 208, 1),

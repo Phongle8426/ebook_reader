@@ -1,7 +1,6 @@
 import 'package:ebook_reader/models/book_model.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../models/book_data.dart';
 import '../../service/database_service.dart';
 import '../navigation_drawer.dart';
 import '../recent_book_widget.dart';
@@ -17,10 +16,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePage extends State<HomePage>{
   List<PreviewBook> _recentBooks = [];
+  List<PreviewBook> _trendingBooks = [];
   @override
   void initState() {
     super.initState();
     _getRecentBooks();
+    _getTrendingBooks();
   }
 
   _getRecentBooks() async {
@@ -29,6 +30,14 @@ class _HomePage extends State<HomePage>{
        print("boook $lisst");
        _recentBooks = lisst;
      });
+  }
+
+  _getTrendingBooks() async {
+    List<PreviewBook> lisst = await DatabaseRealTimeService().getAllBook();
+    setState(() {
+      print("boook $lisst");
+      _trendingBooks = lisst;
+    });
   }
 
   @override
@@ -142,7 +151,7 @@ class _HomePage extends State<HomePage>{
                             ),
                           ),
                           RecentBook(_recentBooks),
-                          TrendingBook(recentBooks)
+                          TrendingBook(_trendingBooks)
                         ],
                       ),
                     ),

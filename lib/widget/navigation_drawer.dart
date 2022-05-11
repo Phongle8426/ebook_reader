@@ -1,4 +1,5 @@
 import 'package:ebook_reader/widget/pages/filter_kind_book_page.dart';
+import 'package:ebook_reader/widget/pages/home_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -29,6 +30,11 @@ class NavigationDrawerWidget extends StatelessWidget {
                 scrollDirection: Axis.vertical,
                 child: Column(
                   children: [
+                    buildMenuItem(
+                      text: 'Trang chủ',
+                      icon: Icons.home,
+                      onClicked: () =>  Navigator.of(context).pushNamed(HomePage.routeName),
+                    ),
                     buildMenuItem(
                       text: 'Sách đã lưu',
                       icon: Icons.bookmark_added_rounded,
