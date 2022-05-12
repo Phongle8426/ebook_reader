@@ -1,4 +1,5 @@
 import 'package:ebook_reader/models/book_model.dart';
+import 'package:ebook_reader/widget/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../service/database_service.dart';
@@ -17,6 +18,7 @@ class HomePage extends StatefulWidget {
 class _HomePage extends State<HomePage>{
   List<PreviewBook> _recentBooks = [];
   List<PreviewBook> _trendingBooks = [];
+  bool loading = true;
   @override
   void initState() {
     super.initState();
@@ -37,6 +39,7 @@ class _HomePage extends State<HomePage>{
     setState(() {
       print("boook $lisst");
       _trendingBooks = lisst;
+      loading = false;
     });
   }
 
@@ -101,7 +104,7 @@ class _HomePage extends State<HomePage>{
                   ),
                 ),
                 Expanded(
-                  child: Container(
+                  child: loading ? Loading() : Container(
                     padding: EdgeInsets.only(
                       top: 20,
                       left: 20,

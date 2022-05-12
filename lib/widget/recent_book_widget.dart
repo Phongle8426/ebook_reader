@@ -64,6 +64,11 @@ class RecentBook extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(20),
                                   child: Image.network(
                                     bookList[i].coverImage,
+                                    loadingBuilder: (context, child, loadingProgress) => loadingProgress == null
+                                    ? child
+                                    : Container(
+                                      child: Center(child: CircularProgressIndicator(),),
+                                    ),
                                     fit: BoxFit.cover,
                                   ),
                                 ),

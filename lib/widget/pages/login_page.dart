@@ -1,3 +1,4 @@
+import 'package:ebook_reader/widget/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:ebook_reader/service/authen.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,6 +16,7 @@ class _LoginPageState extends State<LoginPage> {
   late String password;
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  bool loading = false;
   Widget _backButton() {
     return InkWell(
       onTap: () {
@@ -86,12 +88,16 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
       onTap: () async{
+        setState(() {
+          loading = true;
+        });
         email = emailController.text;
         password = passwordController.text;
         dynamic result = await _auth.signInWithEmailAndPassword(email, password);
         if(result == null) {
           setState(() {
             error = 'Something wrong';
+            loading = false;
           });
         }else{
           Navigator.of(context).pushNamed(HomePage.routeName);
@@ -112,7 +118,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    return Scaffold(
+    return loading ? Loading() : Scaffold(
         body: Container(
           height: height,
           child: Stack(

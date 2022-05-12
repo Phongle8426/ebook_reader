@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:ebook_reader/widget/loading_widget.dart';
 import 'package:ebook_reader/widget/pages/chapter_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -21,6 +22,7 @@ class PreviewPage extends StatefulWidget {
 class _PreviewPage extends State<PreviewPage>{
   PreviewBook _book = PreviewBook.emtpy();
   String? bookId = '';
+  bool loading = true;
   @override
   void initState() {
     super.initState();
@@ -35,6 +37,7 @@ class _PreviewPage extends State<PreviewPage>{
    PreviewBook book = await DatabaseRealTimeService().getBookById(id);
      setState(() {
        _book = book;
+       loading = false;
      });
   }
 
@@ -43,7 +46,7 @@ class _PreviewPage extends State<PreviewPage>{
     var size = MediaQuery.of(context).size;
     return Scaffold(
       body: SafeArea(
-          child: SingleChildScrollView(
+          child: loading ? Loading() : SingleChildScrollView(
             child: Container(
               decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -103,24 +106,53 @@ class _PreviewPage extends State<PreviewPage>{
                       },
                     ),
                   ),
-                  Hero(
-                    tag: Text("Haha"),
-                    child: Container(
-                      height: size.height * 0.3,
-                      width: size.width * 0.4,
-                      decoration: BoxDecoration(
-                          color: Colors.black,
-                          borderRadius: BorderRadius.circular(size.width * 0.05),
-                          image: DecorationImage(image: NetworkImage(_book.coverImage),
-                          fit: BoxFit.cover),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Color.fromRGBO(203, 201, 208, 1),
-                                blurRadius: 10,
-                                spreadRadius: 0.6,
-                                offset: Offset(size.width * 0.55 * 0.051,
-                                    size.height * 0.4 * 0.031))
-                          ]),
+                  // Hero(
+                  //   tag: Text("Haha"),
+                  //   child: Container(
+                  //     height: size.height * 0.3,
+                  //     width: size.width * 0.4,
+                  //     decoration: BoxDecoration(
+                  //         color: Colors.black,
+                  //         borderRadius: BorderRadius.circular(size.width * 0.05),
+                  //         image: DecorationImage(image: NetworkImage(_book.coverImage,),
+                  //         fit: BoxFit.cover),
+                  //         boxShadow: [
+                  //           BoxShadow(
+                  //               color: Color.fromRGBO(203, 201, 208, 1),
+                  //               blurRadius: 10,
+                  //               spreadRadius: 0.6,
+                  //               offset: Offset(size.width * 0.55 * 0.051,
+                  //                   size.height * 0.4 * 0.031))
+                  //         ]),
+                  //   ),
+                  // ),
+                  Container(
+                    width: size.width * 0.4,
+                    height: size.height * 0.3,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.4),
+                          blurRadius: 5,
+                          offset: Offset(8, 8),
+                          spreadRadius: 1,
+                        )
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.network(
+                          _book.coverImage,
+                        loadingBuilder: (context, child, loadingProgress) => loadingProgress == null
+                            ? child
+                            : Container(
+                          height: size.height * 0.3,
+                          width: size.width * 0.4,
+                          child: Center(child: CircularProgressIndicator(),),
+                        ),
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                   SizedBox(

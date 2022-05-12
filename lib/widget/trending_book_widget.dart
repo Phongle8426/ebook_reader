@@ -1,3 +1,4 @@
+import 'package:ebook_reader/widget/pages/preview_page.dart';
 import 'package:flutter/material.dart';
 
 import '../models/book_model.dart';
@@ -26,7 +27,12 @@ class TrendingBook extends StatelessWidget {
                 primary: false,
                 shrinkWrap: true,
                 itemBuilder: (cxt, i) => GestureDetector(
-                  onTap: (){},
+                  onTap: (){
+                    Navigator.of(context).pushNamed(
+                        PreviewPage.routeName,
+                        arguments: bookList[i].idBook
+                    );
+                  },
                   child: Container(
                       padding: EdgeInsets.symmetric(
                         vertical: 5
