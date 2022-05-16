@@ -2,10 +2,12 @@ import 'package:ebook_reader/service/database_service.dart';
 import 'package:ebook_reader/utils/themes/theme.dart';
 import 'package:ebook_reader/widget/chapter_book_widget.dart';
 import 'package:ebook_reader/widget/pages/chapter_page.dart';
+import 'package:ebook_reader/widget/pages/edit_information_user_page.dart';
 import 'package:ebook_reader/widget/pages/filter_kind_book_page.dart';
 import 'package:ebook_reader/widget/pages/home_page.dart';
 import 'package:ebook_reader/widget/pages/listening_page.dart';
 import 'package:ebook_reader/widget/pages/preview_page.dart';
+import 'package:ebook_reader/widget/pages/profile_page.dart';
 import 'package:ebook_reader/widget/pages/reading_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +43,9 @@ class MyApp extends StatelessWidget {
             ChapterPage.routeName: (ctx) => ChapterPage(),
             ReadingPage.routeName: (ctx) => ReadingPage(),
             ListeningPage.routeName: (ctx) => ListeningPage(),
-            KindBookPage.routeName: (ctx) => KindBookPage()
+            KindBookPage.routeName: (ctx) => KindBookPage(),
+            ProfilePage.routeName: (ctx) => ProfilePage(),
+            EditInformation.routeName: (ctx) => EditInformation()
           }
       )
     );

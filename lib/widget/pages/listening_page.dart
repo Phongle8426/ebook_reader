@@ -193,32 +193,39 @@ class _AudioFileState extends State<ListeningPage> {
               child: Column(
                 children: [
                   SizedBox(height: 50,),
-                  Hero(
-                    tag: Text("Haha"),
-                    child: Container(
-                      height: size.height * 0.3,
-                      width: size.width * 0.4,
-                      decoration: BoxDecoration(
-                          color: Colors.black,
-                          borderRadius: BorderRadius.circular(size.width * 0.05),
-                          image: DecorationImage(
-                            fit: BoxFit.fill,
-                            image: AssetImage('assets/3.jfif'),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Color.fromRGBO(203, 201, 208, 1),
-                                blurRadius: 10,
-                                spreadRadius: 0.6,
-                                offset: Offset(size.width * 0.55 * 0.051,
-                                    size.height * 0.4 * 0.031))
-                          ]),
+                  Container(
+                    width: size.width * 0.4,
+                    height: size.height * 0.3,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.4),
+                          blurRadius: 5,
+                          offset: Offset(8, 8),
+                          spreadRadius: 1,
+                        )
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.network(
+                        'https://firebasestorage.googleapis.com/v0/b/ebookreader-5bd9b.appspot.com/o/dauladailuc.jpeg?alt=media&token=98484a25-b672-401c-8440-a62113b2e596',
+                        loadingBuilder: (context, child, loadingProgress) => loadingProgress == null
+                            ? child
+                            : Container(
+                          height: size.height * 0.3,
+                          width: size.width * 0.4,
+                          child: Center(child: CircularProgressIndicator(),),
+                        ),
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                   SizedBox(
                     height: 50,
                   ),
-                Text("Chương ${recieverMap['numberOfChapter']} : ${recieverMap['chapterName']}",
+                Text("Chương ${recieverMap['numberOfChapter'] ?? ''} : ${recieverMap['chapterName'] ?? ''}",
                   style: GoogleFonts.lato(
                       fontWeight: FontWeight.bold,
                       color: Color.fromRGBO(66, 66, 86, 1)),

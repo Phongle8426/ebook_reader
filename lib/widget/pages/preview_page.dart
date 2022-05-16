@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:ebook_reader/models/data_demo.dart';
 import 'package:ebook_reader/widget/loading_widget.dart';
 import 'package:ebook_reader/widget/pages/chapter_page.dart';
 import 'package:flutter/material.dart';
@@ -106,26 +107,6 @@ class _PreviewPage extends State<PreviewPage>{
                       },
                     ),
                   ),
-                  // Hero(
-                  //   tag: Text("Haha"),
-                  //   child: Container(
-                  //     height: size.height * 0.3,
-                  //     width: size.width * 0.4,
-                  //     decoration: BoxDecoration(
-                  //         color: Colors.black,
-                  //         borderRadius: BorderRadius.circular(size.width * 0.05),
-                  //         image: DecorationImage(image: NetworkImage(_book.coverImage,),
-                  //         fit: BoxFit.cover),
-                  //         boxShadow: [
-                  //           BoxShadow(
-                  //               color: Color.fromRGBO(203, 201, 208, 1),
-                  //               blurRadius: 10,
-                  //               spreadRadius: 0.6,
-                  //               offset: Offset(size.width * 0.55 * 0.051,
-                  //                   size.height * 0.4 * 0.031))
-                  //         ]),
-                  //   ),
-                  // ),
                   Container(
                     width: size.width * 0.4,
                     height: size.height * 0.3,
@@ -176,7 +157,6 @@ class _PreviewPage extends State<PreviewPage>{
                         horizontal: size.width * 0.33, vertical: size.width * 0.009),
                     height: size.height * 0.03,
                     width: size.width,
-                    //color: Colors.red,
                     child: FittedBox(
                         child: Text(
                           _book.author,
@@ -461,7 +441,7 @@ class _PreviewPage extends State<PreviewPage>{
                     width: size.width,
                     child: FittedBox(
                         child: Text(
-                          "About",
+                          "Mô tả",
                           style: GoogleFonts.lato(
                               textStyle: TextStyle(
                                 fontWeight: FontWeight.w400,
@@ -476,13 +456,12 @@ class _PreviewPage extends State<PreviewPage>{
                     width: size.width,
                     child: Center(
                         child: Text(
-                          "The Arsonist, by the acclaimed author of The Tall Man, is the story of that man, the fire he lit, and the people who were killed. On the scorching February day in 2009 that became known as Black Saturday, a man lit two fires in Victoria's Latrobe Valley, then sat on the roof of his house to watch the inferno.",
+                          DataDemo.textDemo,
                           overflow: TextOverflow.fade,
-                          style: GoogleFonts.lato(
-                              textStyle: TextStyle(
+                          style: TextStyle(
                                 fontWeight: FontWeight.w300,
                                 color: Color.fromRGBO(66, 66, 86, 1),
-                              )),
+                              ),
                         )),
                   ),
                   Container(

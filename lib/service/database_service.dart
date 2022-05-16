@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:ebook_reader/models/book_model.dart';
 import 'package:ebook_reader/models/chapter_book_model.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -106,5 +108,15 @@ class DatabaseRealTimeService with ChangeNotifier{
       return b.amountOfVisit.compareTo(a.amountOfVisit);
     });
     return list;
+  }
+
+  // Profile
+  void addNewUser(String uid, String email){
+    String userNameRandom = Random().nextInt(1000000).toString();
+    FirebaseDatabase(databaseURL: databaseUrl)
+        .reference().child("UserProfile").child(uid).set({
+      'userName': userNameRandom,
+      'email': email
+    });
   }
 }

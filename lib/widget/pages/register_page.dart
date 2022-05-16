@@ -1,6 +1,10 @@
+import 'package:ebook_reader/widget/loading_widget_2.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ebook_reader/service/authen.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../service/database_service.dart';
+import 'home_page.dart';
 import 'login_page.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -11,8 +15,10 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   final AuthService _auth = AuthService();
   String error = '';
+  bool registerSuccess = false;
   late String email;
   late String password;
+  bool loading = false;
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
@@ -29,7 +35,7 @@ class _SignUpPageState extends State<SignUpPage> {
               padding: EdgeInsets.only(left: 0, top: 10, bottom: 10),
               child: Icon(Icons.keyboard_arrow_left, color: Colors.black),
             ),
-            Text('Back',
+            Text('Trở lại',
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500))
           ],
         ),
@@ -82,22 +88,34 @@ class _SignUpPageState extends State<SignUpPage> {
                 end: Alignment.centerRight,
                 colors: [Color(0xfffbb448), Color(0xfff7892b)])),
         child: Text(
-          'Register Now',
+          'Đăng ký',
           style: TextStyle(fontSize: 20, color: Colors.white),
         ),
       ),
       onTap: () async{
+        setState(() {
+          loading = true;
+        });
         email = emailController.text;
         password = passwordController.text;
         dynamic result = await _auth.registerWithEmailAndPassword(email, password);
         if(result == null) {
           setState(() {
-            error = 'Please supply a valid email';
+            error = 'Ôi không đã xảy ra lỗi, hãy thử lại !';
           });
         }else{
-          setState(() {
-            error = 'Sign up successfully !';
-          });
+          dynamic result = await _auth.signInWithEmailAndPassword(email, password);
+          if(result == null) {
+            setState(() {
+              loading = false;
+            });
+          }else{
+            FirebaseAuth auth = FirebaseAuth.instance;
+            String? uid  = auth.currentUser?.uid;
+            DatabaseRealTimeService().addNewUser(uid!, email);
+            loading = false;
+            Navigator.of(context).pushNamed(HomePage.routeName);
+          }
         }
       },
     );
@@ -117,14 +135,14 @@ class _SignUpPageState extends State<SignUpPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: const <Widget>[
             Text(
-              'Already have an account ?',
+              'Bạn đã có tài khoản ?',
               style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
             ),
             SizedBox(
               width: 10,
             ),
             Text(
-              'Login',
+              'Đăng nhập',
               style: TextStyle(
                   color: Color(0xfff79c4f),
                   fontSize: 13,
@@ -140,7 +158,7 @@ class _SignUpPageState extends State<SignUpPage> {
     return Column(
       children: <Widget>[
         _entryField("Email"),
-        _entryField("Password", isPassword: true),
+        _entryField("Mật khẩu", isPassword: true),
       ],
     );
   }
@@ -149,7 +167,7 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
-      body: Container(
+      body:loading ? Loading2() : Container(
         height: height,
         child: Stack(
           children: <Widget>[
@@ -179,8 +197,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     SizedBox(height: 12.0),
                     Text(
                       error,
-                      style: TextStyle(color: Colors.red, fontSize: 14.0),
-                    ),
+                      style: TextStyle(color: Colors.red, fontSize: 14.0),),
                     SizedBox(height: height * .14),
                     _loginAccountLabel(),
                   ],

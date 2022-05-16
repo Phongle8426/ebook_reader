@@ -84,14 +84,6 @@ class TrendingBook extends StatelessWidget {
                             )
                           ],
                         ),
-                 ClipOval(
-                      child: Container(
-                        child: Text(
-                          '${bookList[i].idBook}',
-                          style: TextStyle(backgroundColor: Colors.amber),
-                        ),
-                      ),
-                    ),
                       ],
                     ),
                   ),

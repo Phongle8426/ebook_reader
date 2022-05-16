@@ -1,5 +1,6 @@
 import 'package:ebook_reader/widget/pages/filter_kind_book_page.dart';
 import 'package:ebook_reader/widget/pages/home_page.dart';
+import 'package:ebook_reader/widget/pages/profile_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -21,7 +22,9 @@ class NavigationDrawerWidget extends StatelessWidget {
               urlImage: urlImage,
               name: name,
               email: email,
-              onClicked: () => {},
+              onClicked: () => {
+                Navigator.of(context).pushNamed(ProfilePage.routeName)
+              },
             ),
             Container(
               padding: padding,
@@ -61,7 +64,7 @@ class NavigationDrawerWidget extends StatelessWidget {
                       onClicked: () => selectedItem(context, 1,'Trinh thám'),
                     ),
                     buildMenuItem(
-                      text: 'Cổ tích',
+                      text: 'Pháp Thuật',
                       icon: Icons.star_border,
                       onClicked: () => selectedItem(context, 1, 'Cổ tích'),
                     ),
@@ -71,7 +74,12 @@ class NavigationDrawerWidget extends StatelessWidget {
                       onClicked: () => selectedItem(context, 1, 'Cổ tích'),
                     ),
                     buildMenuItem(
-                      text: 'Cổ tích',
+                      text: 'Tiểu Thuyết',
+                      icon: Icons.star_border,
+                      onClicked: () => selectedItem(context, 1, 'Cổ tích'),
+                    ),
+                    buildMenuItem(
+                      text: 'Truyện thơ',
                       icon: Icons.star_border,
                       onClicked: () => selectedItem(context, 1, 'Cổ tích'),
                     ),

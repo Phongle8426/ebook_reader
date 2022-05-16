@@ -2,6 +2,7 @@ import 'package:ebook_reader/widget/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:ebook_reader/service/authen.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../loading_widget_2.dart';
 import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -30,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
               padding: EdgeInsets.only(left: 0, top: 10, bottom: 10),
               child: Icon(Icons.keyboard_arrow_left, color: Colors.black),
             ),
-            Text('Back',
+            Text('Trở lại',
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500))
           ],
         ),
@@ -83,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
                 end: Alignment.centerRight,
                 colors: [Color(0xfffbb448), Color(0xfff7892b)])),
         child: Text(
-          'Login',
+          'Đăng nhập',
           style: TextStyle(fontSize: 20, color: Colors.white),
         ),
       ),
@@ -96,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
         dynamic result = await _auth.signInWithEmailAndPassword(email, password);
         if(result == null) {
           setState(() {
-            error = 'Something wrong';
+            error = 'Email hoặc mật khẩu không chính xác !';
             loading = false;
           });
         }else{
@@ -110,7 +111,7 @@ class _LoginPageState extends State<LoginPage> {
     return Column(
       children: <Widget>[
         _entryField("Email"),
-        _entryField("Password", isPassword: true),
+        _entryField("Mật khẩu", isPassword: true),
       ],
     );
   }
@@ -118,7 +119,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    return loading ? Loading() : Scaffold(
+    return loading ? Loading2() : Scaffold(
         body: Container(
           height: height,
           child: Stack(
@@ -145,7 +146,7 @@ class _LoginPageState extends State<LoginPage> {
                       Container(
                         padding: EdgeInsets.symmetric(vertical: 10),
                         alignment: Alignment.centerRight,
-                        child: Text('Forgot Password ?',
+                        child: Text('Quên mật khẩu ?',
                             style: TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.w500)),
                       ),

@@ -81,7 +81,7 @@ class _ReadingPageState extends State<ReadingPage> {
                                   width: constraints.maxWidth * 0.35,
                                   child: FittedBox(
                                       child: Text(
-                                        nameOfChapter ?? '',
+                                        nameOfChapter ??'',
                                         style: GoogleFonts.lato(
                                             textStyle: TextStyle(
                                               fontWeight: FontWeight.bold,
@@ -100,7 +100,8 @@ class _ReadingPageState extends State<ReadingPage> {
                                 child: Icon(
                                   Icons.share,
                                   color: Color.fromRGBO(66, 66, 86, 1),
-                                )),
+                                ),
+                            ),
                           ),
                         ],
                       );
