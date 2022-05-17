@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../../models/user_model.dart';
+import '../../service/database_service.dart';
 import 'login_page.dart';
 
 class EditInformation extends StatefulWidget {
@@ -9,15 +11,25 @@ class EditInformation extends StatefulWidget {
 }
 
 class _EditInformation extends State<EditInformation>{
-  final FirebaseAuth auth = FirebaseAuth.instance;
-  String uid = "";
+  FirebaseAuth auth = FirebaseAuth.instance;
+  String? uid  = '';
   final nameUser = TextEditingController();
   final email = TextEditingController();
-
+  UserInfor user = UserInfor.emtpy();
   @override
   void initState() {
-    uid = auth.currentUser?.uid ?? "";
+      uid  = auth.currentUser?.uid;
+    _getInforUser(uid!);
     super.initState();
+  }
+
+  void _getInforUser(String uid) async{
+    UserInfor userInfor = await DatabaseRealTimeService().getInforUser(uid);
+    setState(() {
+      user = userInfor;
+      email.text = user.email;
+      nameUser.text = user.userName;
+    });
   }
   @override
   Widget build(BuildContext context) {
@@ -92,7 +104,11 @@ class _EditInformation extends State<EditInformation>{
                   ),
                   TextField(
                     decoration: InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Color(0xfffbb448), width: 2.0),
+                            borderRadius: BorderRadius.circular(12)),
                         border: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Color(0xfffbb448), width: 2.0),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         fillColor: Color(0xfff3f3f4),
@@ -109,6 +125,7 @@ class _EditInformation extends State<EditInformation>{
                     height: 8,
                   ),
                   TextField(
+                    enabled: false,
                     decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -118,12 +135,55 @@ class _EditInformation extends State<EditInformation>{
                     controller:  email,)
                 ],
               ),
-            )
+            ),
+                  SizedBox(height: 100,),
+                  _submitButton()
                 ],
               ),
             ),
           ),
         )
+    );
+  }
+
+  Widget _submitButton() {
+    return InkWell(
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.88,
+        padding: EdgeInsets.symmetric(vertical: 15),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(5)),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                  color: Colors.grey.shade200,
+                  offset: Offset(2, 4),
+                  blurRadius: 5,
+                  spreadRadius: 2)
+            ],
+            gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [Color(0xfffbb448), Color(0xfff7892b)])),
+        child: Text(
+          'Lưu',
+          style: TextStyle(fontSize: 20, color: Colors.white),
+        ),
+      ),
+      onTap: () async{
+        if(nameUser.text != ""){
+          DatabaseRealTimeService().changeNameUser(uid!, nameUser.text);
+        }else{
+          final snackBar = SnackBar(
+            content: const Text('Xin đừng để tên trống!'),
+            action: SnackBarAction(
+              label: 'OK bạn!',
+              onPressed: () {},
+            ),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+      },
     );
   }
   void _signOut() {

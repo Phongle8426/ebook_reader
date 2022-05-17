@@ -6,6 +6,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../models/content_book_model.dart';
+import '../models/user_model.dart';
 
 class DatabaseRealTimeService with ChangeNotifier{
   String databaseUrl = "https://ebookreader-5bd9b-default-rtdb.asia-southeast1.firebasedatabase.app";
@@ -111,6 +112,23 @@ class DatabaseRealTimeService with ChangeNotifier{
   }
 
   // Profile
+  Future<UserInfor> getInforUser(String uid) async{
+    DataSnapshot dataSnapshot = await FirebaseDatabase(databaseURL: databaseUrl)
+        .reference().child("UserProfile").child(uid).once();
+    UserInfor userProfile = UserInfor.emtpy();
+    if(dataSnapshot.value != null){
+      final data = Map<String, dynamic>.from(dataSnapshot.value);
+      print("Data: $data");
+      userProfile = UserInfor.fromRTDB(data);
+    }
+    return userProfile;
+  }
+
+  void changeNameUser(String uid, String name){
+    FirebaseDatabase(databaseURL: databaseUrl)
+        .reference().child("UserProfile").child(uid).child("userName").set(name);
+  }
+
   void addNewUser(String uid, String email){
     String userNameRandom = Random().nextInt(1000000).toString();
     FirebaseDatabase(databaseURL: databaseUrl)
@@ -118,5 +136,11 @@ class DatabaseRealTimeService with ChangeNotifier{
       'userName': userNameRandom,
       'email': email
     });
+  }
+
+  // Save favourite book
+  void addNewFavouriteBook(String uid, PreviewBook book){
+    FirebaseDatabase(databaseURL: databaseUrl)
+        .reference().child("StoredBook").child(uid).push().set({book});
   }
 }

@@ -3,13 +3,11 @@ import 'dart:collection';
 import 'package:ebook_reader/models/data_demo.dart';
 import 'package:ebook_reader/widget/loading_widget.dart';
 import 'package:ebook_reader/widget/pages/chapter_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-
 import '../../models/book_model.dart';
 import '../../service/database_service.dart';
-import 'listening_page.dart';
 
 class PreviewPage extends StatefulWidget {
   static const routeName = '/PreviewPage';
@@ -23,10 +21,14 @@ class PreviewPage extends StatefulWidget {
 class _PreviewPage extends State<PreviewPage>{
   PreviewBook _book = PreviewBook.emtpy();
   String? bookId = '';
+  String? uid ='';
   bool loading = true;
+  bool isMark = false;
   @override
   void initState() {
     super.initState();
+    FirebaseAuth auth = FirebaseAuth.instance;
+    uid  = auth.currentUser?.uid;
     Future.delayed(Duration.zero,() {
       print("Chay ne 123");
       bookId = ModalRoute.of(context)?.settings.arguments.toString();
@@ -40,6 +42,12 @@ class _PreviewPage extends State<PreviewPage>{
        _book = book;
        loading = false;
      });
+  }
+
+  void _setBookMark(){
+    setState(() {
+      isMark = !isMark;
+    });
   }
 
   @override
@@ -92,16 +100,29 @@ class _PreviewPage extends State<PreviewPage>{
                             SizedBox(
                               width: constraints.maxWidth * 0.54,
                             ),
-                            Container(
-                              padding: EdgeInsets.all(constraints.maxHeight * 0.18),
-                              height: constraints.maxHeight * 0.8,
-                              width: constraints.maxWidth * 0.15,
-                              child: FittedBox(
-                                  child: Icon(
-                                    Icons.bookmark_border,
-                                    color: Colors.white,
-                                  )),
-                            )
+                            Material(
+                              color: Colors.white.withOpacity(0),
+                              child: InkWell(
+                                onTap: () => {
+                                  DatabaseRealTimeService().addNewFavouriteBook(uid!, _book),
+                                  _setBookMark()
+                                },
+                                borderRadius: BorderRadius.circular(
+                                    constraints.maxHeight * 0.4),
+                                splashColor: Colors.white,
+                                child: Container(
+                                  padding:
+                                  EdgeInsets.all(constraints.maxHeight * 0.18),
+                                  height: constraints.maxHeight * 0.8,
+                                  width: constraints.maxWidth * 0.15,
+                                  child: FittedBox(
+                                      child: Icon(
+                                        isMark ? Icons.bookmark : Icons.bookmark_border,
+                                        color: isMark ? Color(0xFFFF7643) : Colors.white,
+                                      )),
+                                ),
+                              ),
+                            ),
                           ],
                         );
                       },

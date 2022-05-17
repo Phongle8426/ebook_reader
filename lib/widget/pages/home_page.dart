@@ -1,7 +1,9 @@
 import 'package:ebook_reader/models/book_model.dart';
 import 'package:ebook_reader/widget/loading_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../models/user_model.dart';
 import '../../service/database_service.dart';
 import '../navigation_drawer.dart';
 import '../recent_book_widget.dart';
@@ -18,12 +20,16 @@ class HomePage extends StatefulWidget {
 class _HomePage extends State<HomePage>{
   List<PreviewBook> _recentBooks = [];
   List<PreviewBook> _trendingBooks = [];
+  UserInfor user = UserInfor.emtpy();
   bool loading = true;
   @override
   void initState() {
-    super.initState();
+    FirebaseAuth auth = FirebaseAuth.instance;
+    String? uid  = auth.currentUser?.uid;
+    _getInforUser(uid!);
     _getRecentBooks();
     _getTrendingBooks();
+    super.initState();
   }
 
   _getRecentBooks() async {
@@ -40,6 +46,12 @@ class _HomePage extends State<HomePage>{
       print("boook $lisst");
       _trendingBooks = lisst;
       loading = false;
+    });
+  }
+  void _getInforUser(String uid) async{
+    UserInfor userInfor = await DatabaseRealTimeService().getInforUser(uid);
+    setState(() {
+      user = userInfor;
     });
   }
 
@@ -133,7 +145,7 @@ class _HomePage extends State<HomePage>{
                               ),
                               SizedBox(width: 3,),
                               Text(
-                                "Thái Phan",
+                                user.userName,
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w700,

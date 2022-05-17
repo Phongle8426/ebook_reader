@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../models/user_model.dart';
+import '../../service/database_service.dart';
 import '../profile_item.dart';
 import 'edit_information_user_page.dart';
 import 'login_page.dart';
@@ -12,6 +14,22 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePage extends State<ProfilePage>{
+   UserInfor user = UserInfor.emtpy();
+  @override
+  void initState() {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    String? uid  = auth.currentUser?.uid;
+    _getInforUser(uid!);
+    super.initState();
+  }
+
+  void _getInforUser(String uid) async{
+    UserInfor userInfor = await DatabaseRealTimeService().getInforUser(uid);
+    setState(() {
+      user = userInfor;
+    });
+  }
+
   void _logout(BuildContext context, VoidCallback press) {
     showDialog(
         context: context,
@@ -93,7 +111,7 @@ class _ProfilePage extends State<ProfilePage>{
                 ),
                 SizedBox(height: 15),
                 Text(
-                  "Thái Phan",
+                  user.userName,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,

@@ -1,15 +1,34 @@
 import 'package:ebook_reader/widget/pages/filter_kind_book_page.dart';
 import 'package:ebook_reader/widget/pages/home_page.dart';
 import 'package:ebook_reader/widget/pages/profile_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../models/user_model.dart';
+import '../service/database_service.dart';
 
-class NavigationDrawerWidget extends StatelessWidget {
+class NavigationDrawerWidget extends StatefulWidget {
+  @override
+  _NavigationDrawerWidget createState() => _NavigationDrawerWidget();
+}
+
+class _NavigationDrawerWidget extends State<NavigationDrawerWidget>{
   final padding = EdgeInsets.symmetric(horizontal: 3);
+  UserInfor user = UserInfor.emtpy();
+  void initState() {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    String? uid  = auth.currentUser?.uid;
+    _getInforUser(uid!);
+    super.initState();
+  }
+  void _getInforUser(String uid) async{
+    UserInfor userInfor = await DatabaseRealTimeService().getInforUser(uid);
+    setState(() {
+      user = userInfor;
+    });
+  }
   @override
   Widget build(BuildContext context) {
-    final name = 'Thái Phan';
-    final email = 'thaiphan@gmail.com';
     final urlImage =
         'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80';
 
@@ -20,8 +39,8 @@ class NavigationDrawerWidget extends StatelessWidget {
           children: <Widget>[
             buildHeader(
               urlImage: urlImage,
-              name: name,
-              email: email,
+              name: user.userName,
+              email: user.email,
               onClicked: () => {
                 Navigator.of(context).pushNamed(ProfilePage.routeName)
               },
