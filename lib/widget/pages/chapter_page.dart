@@ -1,5 +1,6 @@
 import 'package:ebook_reader/models/chapter_book_model.dart';
 import 'package:ebook_reader/widget/chapter_book_widget.dart';
+import 'package:ebook_reader/widget/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../service/database_service.dart';
@@ -14,13 +15,13 @@ class ChapterPage extends StatefulWidget {
 
 class _ChapterPage extends State<ChapterPage>{
   List<ChapterBook> _chapterBook = [];
+  bool loading = true;
   late Map recieverMap = Map();
   @override
   void initState() {
     super.initState();
     Future.delayed(Duration.zero,() {
       recieverMap = ModalRoute.of(context)?.settings.arguments as Map;
-      print("recieverMap  $recieverMap");
       _getChapterBooks(recieverMap['idBook']);
     });
   }
@@ -30,13 +31,14 @@ class _ChapterPage extends State<ChapterPage>{
     setState(() {
       print("getChapterOfBookById  $listChapter");
       _chapterBook = listChapter;
+      loading = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+      body:loading ? Loading() : Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
                 colors: [Color.fromRGBO(249, 191, 161, 1), Colors.white],
@@ -54,11 +56,11 @@ class _ChapterPage extends State<ChapterPage>{
                 bottom: 20,
               ),
               child: Text(recieverMap['nameBook'] ?? '',
-                  style: GoogleFonts.portLligatSans(
+                  style: GoogleFonts.abhayaLibre(
                     textStyle: Theme.of(context).textTheme.headline1,
                     fontSize: 30,
                     fontWeight: FontWeight.w700,
-                    color: Colors.black26,
+                    color: Colors.black,
                   )
               ),
             ),

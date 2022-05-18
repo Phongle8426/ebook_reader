@@ -166,6 +166,12 @@ class _HomePage extends State<HomePage>{
                             ),
                           ),
                           RecentBook(_recentBooks),
+                          Text('Top truyện đọc nhiều',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                           TrendingBook(_trendingBooks)
                         ],
                       ),

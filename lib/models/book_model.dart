@@ -29,5 +29,18 @@ class PreviewBook with ChangeNotifier {
         data['status'],data['kindOfBook'],data['amountOfVisit']);
   }
 
+  Map<String,dynamic> toMap(){
+    return {
+      "idBook":idBook,
+      "name":name,
+      "author":author,
+      "coverImage":coverImage,
+      "mountChapter": mountChapter,
+      "status": status,
+      "kindOfBook": kindOfBook,
+      "amountOfVisit": amountOfVisit
+    };
+  }
+
 }
 

@@ -19,6 +19,7 @@ class _AudioFileState extends State<ListeningPage> {
   bool isPlaying=false;
   bool isPaused=false;
   bool isRepeat=false;
+  double currentSpeed = 1;
   Color color= Colors.black;
   List<IconData> _icons = [
     Icons.play_circle_fill,
@@ -45,7 +46,7 @@ class _AudioFileState extends State<ListeningPage> {
   Widget btnStart() {
     return IconButton(
       padding: const EdgeInsets.only(bottom: 15),
-      icon:isPlaying==false?Icon(_icons[0], size:50, color:Colors.blue):Icon(_icons[1], size:50, color:Colors.blue),
+      icon:isPlaying==false?Icon(_icons[0], size:50, color: Color(0xFFFF7643)):Icon(_icons[1], size:50, color:Colors.blue),
       onPressed: (){
         if(isPlaying==false) {
           advancedPlayer.play(audioPath, isLocal: false);
@@ -76,8 +77,26 @@ class _AudioFileState extends State<ListeningPage> {
       icon:  Icon(Icons.keyboard_double_arrow_left_rounded),
       onPressed: () {
         advancedPlayer.setPlaybackRate(0.5);
-
       },
+    );
+  }
+
+  Widget btnSpeed(double speed) {
+    return MaterialButton(
+      child: Text(changeSpeed(speed), style: TextStyle(fontSize: 10),),
+      color: Colors.grey,
+      onPressed: () {
+          setState(() {
+            print(currentSpeed);
+            if(currentSpeed == 2) {
+              currentSpeed = 1;
+            } else {
+              currentSpeed = currentSpeed + 0.5;
+            }
+          });
+          advancedPlayer.setPlaybackRate(currentSpeed);
+      },
+        shape: CircleBorder()
     );
   }
 
@@ -93,6 +112,13 @@ class _AudioFileState extends State<ListeningPage> {
             changeToSecond(value.toInt());
             value = value;
           });});
+  }
+
+  String changeSpeed(double speed){
+    if(speed == 1) return "x1";
+    if(speed == 1.5) return "x1.5";
+    if(speed == 2) return "x2";
+    return "";
   }
 
   void changeToSecond(int second){
@@ -124,7 +150,6 @@ class _AudioFileState extends State<ListeningPage> {
                   colors: [Color.fromRGBO(249, 191, 161, 1), Colors.white],
                   begin: Alignment.topCenter,
                   end: Alignment.center
-                //,stops: [0.7,0.9]
               )),
           child: Column(
           children: [
@@ -172,7 +197,7 @@ class _AudioFileState extends State<ListeningPage> {
                         child: FittedBox(
                             child: Icon(
                               Icons.bookmark_border,
-                              color: Colors.white,
+                              color: Colors.transparent,
                             )),
                       )
                     ],
@@ -246,12 +271,12 @@ class _AudioFileState extends State<ListeningPage> {
                   slider(),
                   loadAsset(),
                   Container(
-                    //color: Colors.amber,
+                    padding: EdgeInsets.symmetric(horizontal: 10),
                     height: size.height * 0.1,
                     child: LayoutBuilder(
                       builder: (context, constraints) {
                         return Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Material(
                               borderRadius:
@@ -306,6 +331,7 @@ class _AudioFileState extends State<ListeningPage> {
                                 ),
                               ),
                             ),
+                            btnSpeed(currentSpeed)
                           ],
                         );
                       },

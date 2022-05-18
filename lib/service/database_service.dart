@@ -30,6 +30,21 @@ class DatabaseRealTimeService with ChangeNotifier{
     return sortListTrending(allBooks);
   }
 
+  // get all favourite book
+  Future<List<PreviewBook>> getAllFavouriteBook(String uid) async{
+    DataSnapshot dataSnapshot = await FirebaseDatabase(databaseURL: databaseUrl)
+        .reference().child("StoredBook").child(uid).once();
+    List<PreviewBook> allBooks = [];
+    if(dataSnapshot.value != null){
+      final data = Map<String, dynamic>.from(dataSnapshot.value);
+      data.forEach((key, value) {
+        Map<String, dynamic> newData = Map<String, dynamic>.from(value);
+        allBooks.add(PreviewBook.fromRTDB(newData));
+      });
+    }
+    return sortListTrending(allBooks);
+  }
+
   Future<PreviewBook> getBookById(String idBook) async{
     DataSnapshot dataSnapshot = await FirebaseDatabase(databaseURL: databaseUrl)
         .reference().child("allBooks").orderByChild('idBook').equalTo(idBook).once();
@@ -130,7 +145,7 @@ class DatabaseRealTimeService with ChangeNotifier{
   }
 
   void addNewUser(String uid, String email){
-    String userNameRandom = Random().nextInt(1000000).toString();
+    String userNameRandom = '#${Random().nextInt(1000000).toString()}';
     FirebaseDatabase(databaseURL: databaseUrl)
         .reference().child("UserProfile").child(uid).set({
       'userName': userNameRandom,
@@ -141,6 +156,17 @@ class DatabaseRealTimeService with ChangeNotifier{
   // Save favourite book
   void addNewFavouriteBook(String uid, PreviewBook book){
     FirebaseDatabase(databaseURL: databaseUrl)
-        .reference().child("StoredBook").child(uid).push().set({book});
+        .reference().child("StoredBook").child(uid).push().set(book.toMap());
   }
+
+  void removeFavouriteBook(String uid, String idBook) async{
+    DataSnapshot dataSnapshot = await FirebaseDatabase(databaseURL: databaseUrl)
+        .reference().child("StoredBook").child(uid).orderByChild('idBook').equalTo(idBook).once();
+    final data = Map<String, dynamic>.from(dataSnapshot.value);
+    data.forEach((key, value) {
+      FirebaseDatabase(databaseURL: databaseUrl)
+          .reference().child("StoredBook").child(uid).child(key).remove();
+    });
+  }
+
 }

@@ -1,6 +1,7 @@
 import 'package:ebook_reader/widget/pages/filter_kind_book_page.dart';
 import 'package:ebook_reader/widget/pages/home_page.dart';
 import 'package:ebook_reader/widget/pages/profile_page.dart';
+import 'package:ebook_reader/widget/pages/saved_book_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -166,9 +167,7 @@ class _NavigationDrawerWidget extends State<NavigationDrawerWidget>{
     Navigator.of(context).pop();
     switch (index) {
       case 0:
-        // Navigator.of(context).push(MaterialPageRoute(
-        //   builder: (context) => PeoplePage(),
-        // ));
+         Navigator.of(context).pushNamed(SavedBookPage.routeName);
         break;
       case 1:
         Navigator.of(context).pushNamed(

@@ -13,16 +13,7 @@ class TrendingBook extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Top truyện đọc nhiều',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
           Container(
-            padding:  EdgeInsets.only(
-              bottom: 10,
-            ),
             child: ListView.builder(
                 primary: false,
                 shrinkWrap: true,

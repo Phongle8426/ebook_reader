@@ -104,7 +104,10 @@ class _PreviewPage extends State<PreviewPage>{
                               color: Colors.white.withOpacity(0),
                               child: InkWell(
                                 onTap: () => {
-                                  DatabaseRealTimeService().addNewFavouriteBook(uid!, _book),
+                                  if(isMark)
+                                    DatabaseRealTimeService().removeFavouriteBook(uid!, _book.idBook)
+                                  else
+                                    DatabaseRealTimeService().addNewFavouriteBook(uid!, _book),
                                   _setBookMark()
                                 },
                                 borderRadius: BorderRadius.circular(
@@ -175,7 +178,7 @@ class _PreviewPage extends State<PreviewPage>{
                   ),
                   Container(
                     padding: EdgeInsets.symmetric(
-                        horizontal: size.width * 0.33, vertical: size.width * 0.009),
+                        horizontal: size.width * 0.1),
                     height: size.height * 0.03,
                     width: size.width,
                     child: FittedBox(
@@ -224,16 +227,15 @@ class _PreviewPage extends State<PreviewPage>{
                                             //color: Colors.pink,
                                             height: constraints.maxHeight * 0.4,
                                             width: constraints.maxWidth,
-                                            child: FittedBox(
+                                            child: const FittedBox(
                                                 fit: BoxFit.scaleDown,
                                                 child: Text(
                                                   "Ngày phát hành",
-                                                  style: GoogleFonts.lato(
-                                                      textStyle: TextStyle(
+                                                  style: TextStyle(
                                                           fontSize: 20,
                                                           color: Color.fromRGBO(
                                                               142, 142, 154, 1),
-                                                          fontWeight: FontWeight.w300)),
+                                                          fontWeight: FontWeight.w300),
                                                 )),
                                           ),
                                         ],
@@ -273,17 +275,16 @@ class _PreviewPage extends State<PreviewPage>{
                                             //color: Colors.pink,
                                             height: constraints.maxHeight * 0.4,
                                             width: constraints.maxWidth,
-                                            child: FittedBox(
+                                            child: const FittedBox(
                                                 fit: BoxFit.scaleDown,
                                                 child: Text(
                                                   "Số chương",
-                                                  style: GoogleFonts.lato(
-                                                      textStyle: TextStyle(
+                                                  style: TextStyle(
                                                           fontSize: 20,
                                                           color: Color.fromRGBO(
                                                               142, 142, 154, 1),
                                                           fontWeight: FontWeight.w300)),
-                                                )),
+                                                ),
                                           ),
                                         ],
                                       );
@@ -322,17 +323,16 @@ class _PreviewPage extends State<PreviewPage>{
                                             //color: Colors.pink,
                                             height: constraints.maxHeight * 0.4,
                                             width: constraints.maxWidth,
-                                            child: FittedBox(
+                                            child: const FittedBox(
                                                 fit: BoxFit.scaleDown,
                                                 child: Text(
                                                   "Người đọc",
-                                                  style: GoogleFonts.lato(
-                                                      textStyle: TextStyle(
+                                                  style: TextStyle(
                                                           fontSize: 20,
                                                           color: Color.fromRGBO(
                                                               142, 142, 154, 1),
                                                           fontWeight: FontWeight.w300)),
-                                                )),
+                                                ),
                                           ),
                                         ],
                                       );
@@ -382,17 +382,16 @@ class _PreviewPage extends State<PreviewPage>{
                                         //color: Colors.pink,
                                         height: constraints.maxHeight * 0.4,
                                         width: constraints.maxWidth,
-                                        child: FittedBox(
+                                        child: const FittedBox(
                                             fit: BoxFit.scaleDown,
                                             child: Text(
                                               "Thể loại",
-                                              style: GoogleFonts.lato(
-                                                  textStyle: TextStyle(
+                                              style: TextStyle(
                                                       fontSize: 20,
                                                       color: Color.fromRGBO(
                                                           142, 142, 154, 1),
                                                       fontWeight: FontWeight.w300)),
-                                            )),
+                                            ),
                                       ),
                                     ],
                                   );
@@ -412,8 +411,7 @@ class _PreviewPage extends State<PreviewPage>{
                                   return Column(
                                     children: [
                                       Container(
-                                        padding: EdgeInsets.all(
-                                            constraints.maxHeight * 0.1),
+                                        padding: EdgeInsets.only(left: constraints.maxHeight * 0.1),
                                         //color: Colors.grey,
                                         height: constraints.maxHeight * 0.6,
                                         width: constraints.maxWidth,
@@ -431,17 +429,16 @@ class _PreviewPage extends State<PreviewPage>{
                                         //color: Colors.pink,
                                         height: constraints.maxHeight * 0.4,
                                         width: constraints.maxWidth,
-                                        child: FittedBox(
+                                        child: const FittedBox(
                                             fit: BoxFit.scaleDown,
                                             child: Text(
                                               "Trạng thái",
-                                              style: GoogleFonts.lato(
-                                                  textStyle: TextStyle(
+                                              style: TextStyle(
                                                       fontSize: 20,
                                                       color: Color.fromRGBO(
                                                           142, 142, 154, 1),
                                                       fontWeight: FontWeight.w300)),
-                                            )),
+                                            ),
                                       ),
                                     ],
                                   );

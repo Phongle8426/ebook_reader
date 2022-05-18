@@ -9,6 +9,7 @@ import 'package:ebook_reader/widget/pages/listening_page.dart';
 import 'package:ebook_reader/widget/pages/preview_page.dart';
 import 'package:ebook_reader/widget/pages/profile_page.dart';
 import 'package:ebook_reader/widget/pages/reading_page.dart';
+import 'package:ebook_reader/widget/pages/saved_book_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:ebook_reader/widget/pages/welcome_page.dart';
@@ -45,7 +46,8 @@ class MyApp extends StatelessWidget {
             ListeningPage.routeName: (ctx) => ListeningPage(),
             KindBookPage.routeName: (ctx) => KindBookPage(),
             ProfilePage.routeName: (ctx) => ProfilePage(),
-            EditInformation.routeName: (ctx) => EditInformation()
+            EditInformation.routeName: (ctx) => EditInformation(),
+            SavedBookPage.routeName: (ctx) => SavedBookPage()
           }
       )
     );
