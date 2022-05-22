@@ -1,19 +1,16 @@
 import 'dart:math';
-
 import 'package:ebook_reader/models/book_model.dart';
 import 'package:ebook_reader/models/chapter_book_model.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
-
 import '../models/content_book_model.dart';
 import '../models/user_model.dart';
 
 class DatabaseRealTimeService with ChangeNotifier{
   String databaseUrl = "https://ebookreader-5bd9b-default-rtdb.asia-southeast1.firebasedatabase.app";
-  List<PreviewBook> _previewBookList = [];
-  List<PreviewBook> get previewBookList {
-    return _previewBookList;
-  }
+  String nameUser = "";
+  int numberOfChap = 0;
+  String nameOfChapter = "";
 
   Future<List<PreviewBook>> getAllBook() async{
   DataSnapshot dataSnapshot = await FirebaseDatabase(databaseURL: databaseUrl)
@@ -45,20 +42,27 @@ class DatabaseRealTimeService with ChangeNotifier{
     return sortListTrending(allBooks);
   }
 
+  // check favourite book
+  Future<bool> isFavouriteBook(String uid, String idBook) async{
+    DataSnapshot dataSnapshot = await FirebaseDatabase(databaseURL: databaseUrl)
+        .reference().child("StoredBook").child(uid).orderByChild('idBook').equalTo(idBook).once();
+    if(dataSnapshot.value != null) {
+      return true;
+    }
+    return false;
+  }
+
   Future<PreviewBook> getBookById(String idBook) async{
     DataSnapshot dataSnapshot = await FirebaseDatabase(databaseURL: databaseUrl)
         .reference().child("allBooks").orderByChild('idBook').equalTo(idBook).once();
     PreviewBook book = PreviewBook.emtpy();
-    print("Phong1: $dataSnapshot");
       if(dataSnapshot.value != null){
         final data = Map<String, dynamic>.from(dataSnapshot.value);
-        print("Phong2: $data");
         data.forEach((key, value) {
           Map<String, dynamic> newData = Map<String, dynamic>.from(value);
           book = PreviewBook.fromRTDB(newData);
         });
       }
-    print("Phong3: $book");
     return book;
   }
 
@@ -68,14 +72,11 @@ class DatabaseRealTimeService with ChangeNotifier{
     List<PreviewBook> allBooks = [];
     if(dataSnapshot.value != null){
       final data = Map<String, dynamic>.from(dataSnapshot.value);
-      print("Data: $data");
       data.forEach((key, value) {
         Map<String, dynamic> newData = Map<String, dynamic>.from(value);
         allBooks.add(PreviewBook.fromRTDB(newData));
       });
     }
-    _previewBookList = allBooks;
-    notifyListeners();
     return allBooks;
   }
 
@@ -85,7 +86,6 @@ class DatabaseRealTimeService with ChangeNotifier{
     List<ChapterBook> allChapter = [];
     if(dataSnapshot.value != null){
       final data = Map<String, dynamic>.from(dataSnapshot.value);
-      print("Data: $data");
       data.forEach((key, value) {
         Map<String, dynamic> newData = Map<String, dynamic>.from(value);
         allChapter.add(ChapterBook.fromRTDB(newData));
@@ -102,14 +102,63 @@ class DatabaseRealTimeService with ChangeNotifier{
       final data = Map<String, dynamic>.from(dataSnapshot.value);
       print("Data: $data");
       contentChapter = ContentBook.fromRTDB(data);
+
+      DataSnapshot snapshot = await FirebaseDatabase(databaseURL: databaseUrl)
+          .reference().child("ChapterOfBook").child(idBook).orderByChild('idChapter').equalTo(idChapter).once();
+      ChapterBook chapter = ChapterBook.emtpy();
+      if(snapshot.value != null){
+        final dataChap = Map<String, dynamic>.from(snapshot.value);
+        dataChap.forEach((key, value) {
+          Map<String, dynamic> newData = Map<String, dynamic>.from(value);
+          chapter = ChapterBook.fromRTDB(newData);
+          numberOfChap = chapter.numberOfChapter;
+          nameOfChapter = chapter.chapterName;
+        });
+        notifyListeners();
+      }
     }
     return contentChapter;
   }
 
+  Future<String> getAudioChapter(String idBook,String idChapter) async{
+    DataSnapshot dataSnapshot = await FirebaseDatabase(databaseURL: databaseUrl)
+        .reference().child("ContentOfBook").child(idBook).child(idChapter).child("contentAudio").once();
+   String url = "";
+    if(dataSnapshot.value != null){
+      url = dataSnapshot.value.toString();
+    }
+    return url;
+  }
 
-  PreviewBook findById(String id) {
-    print('list : $_previewBookList');
-    return _previewBookList.firstWhere((prod) => prod.idBook == id);
+  Future<String> getAudioChapterByNumberOfChap(String idBook, int number) async{
+    DataSnapshot dataSnapshot = await FirebaseDatabase(databaseURL: databaseUrl)
+        .reference().child("ContentOfBook").child(idBook).orderByChild('numberOfChapter').equalTo(number).once();
+    ContentBook contentChapter = ContentBook.emtpy();
+    String url = "";
+    if(dataSnapshot.value != null){
+      final data = Map<String, dynamic>.from(dataSnapshot.value);
+      data.forEach((key, value) {
+        Map<String, dynamic> newData = Map<String, dynamic>.from(value);
+        contentChapter = ContentBook.fromRTDB(newData);
+      });
+      url = contentChapter.contentAudio!;
+      data.forEach((key, value) async {
+        DataSnapshot dataSnapshot = await FirebaseDatabase(databaseURL: databaseUrl)
+            .reference().child("ChapterOfBook").child(idBook).orderByChild('idChapter').equalTo(key).once();
+        ChapterBook chapter = ChapterBook.emtpy();
+        if(dataSnapshot.value != null){
+          final data = Map<String, dynamic>.from(dataSnapshot.value);
+          data.forEach((key, value) {
+            Map<String, dynamic> newData = Map<String, dynamic>.from(value);
+            chapter = ChapterBook.fromRTDB(newData);
+            numberOfChap = chapter.numberOfChapter;
+            nameOfChapter = chapter.chapterName;
+          });
+          notifyListeners();
+        }
+      });
+    }
+    return url;
   }
 
   List<ChapterBook> sortList(List<ChapterBook> list){
@@ -136,12 +185,20 @@ class DatabaseRealTimeService with ChangeNotifier{
       print("Data: $data");
       userProfile = UserInfor.fromRTDB(data);
     }
+    postUserName(userProfile.userName);
     return userProfile;
   }
+  void postUserName(String name){
+    print("chay ne 1234567890");
+    nameUser = name;
+    notifyListeners();
+  }
 
-  void changeNameUser(String uid, String name){
+  Future<void> changeNameUser(String uid, String name) async {
     FirebaseDatabase(databaseURL: databaseUrl)
         .reference().child("UserProfile").child(uid).child("userName").set(name);
+    postUserName(name);
+    notifyListeners();
   }
 
   void addNewUser(String uid, String email){
@@ -168,5 +225,7 @@ class DatabaseRealTimeService with ChangeNotifier{
           .reference().child("StoredBook").child(uid).child(key).remove();
     });
   }
+
+  // Get audio next chapter
 
 }

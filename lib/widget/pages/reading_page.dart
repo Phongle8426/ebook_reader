@@ -81,7 +81,7 @@ class _ReadingPageState extends State<ReadingPage> {
                                   width: constraints.maxWidth * 0.35,
                                   child: FittedBox(
                                       child: Text(
-                                        nameOfChapter ??'',
+                                        nameOfChapter,
                                         style: GoogleFonts.lato(
                                             textStyle: TextStyle(
                                               fontWeight: FontWeight.bold,

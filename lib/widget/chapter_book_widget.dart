@@ -26,6 +26,7 @@ class ChapterBookWidget extends StatelessWidget {
               backgroundColor: Color(0xFFF5F6F9),
             ),
             onPressed: () => {
+              Navigator.pop(context),
               Navigator.of(context).pushNamed(
                   type == 0 ? ReadingPage.routeName : ListeningPage.routeName,
                   arguments: {

@@ -33,6 +33,7 @@ class _PreviewPage extends State<PreviewPage>{
       print("Chay ne 123");
       bookId = ModalRoute.of(context)?.settings.arguments.toString();
       _getBooks(bookId!);
+      _checkBookMark(uid!,bookId!);
     });
   }
   _getBooks(String id) async{
@@ -44,6 +45,12 @@ class _PreviewPage extends State<PreviewPage>{
      });
   }
 
+  _checkBookMark(String uid, String idbook) async {
+    bool isFavourite = await DatabaseRealTimeService().isFavouriteBook(uid, idbook);
+    setState(() {
+      isMark = isFavourite;
+    });
+  }
   void _setBookMark(){
     setState(() {
       isMark = !isMark;

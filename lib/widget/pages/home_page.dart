@@ -3,6 +3,7 @@ import 'package:ebook_reader/widget/loading_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../../models/user_model.dart';
 import '../../service/database_service.dart';
 import '../navigation_drawer.dart';
@@ -21,7 +22,9 @@ class _HomePage extends State<HomePage>{
   List<PreviewBook> _recentBooks = [];
   List<PreviewBook> _trendingBooks = [];
   UserInfor user = UserInfor.emtpy();
+  String userName = "";
   bool loading = true;
+  bool isOpenSearchBox = false;
   @override
   void initState() {
     FirebaseAuth auth = FirebaseAuth.instance;
@@ -33,23 +36,21 @@ class _HomePage extends State<HomePage>{
   }
 
   _getRecentBooks() async {
-    List<PreviewBook> lisst = await DatabaseRealTimeService().getAllBook();
+    List<PreviewBook> lisst = await Provider.of<DatabaseRealTimeService>(context, listen: false).getAllBook();
      setState(() {
-       print("boook $lisst");
        _recentBooks = lisst;
      });
   }
 
   _getTrendingBooks() async {
-    List<PreviewBook> lisst = await DatabaseRealTimeService().getAllBook();
+    List<PreviewBook> lisst = await Provider.of<DatabaseRealTimeService>(context, listen: false).getAllBook();
     setState(() {
-      print("boook $lisst");
       _trendingBooks = lisst;
       loading = false;
     });
   }
   void _getInforUser(String uid) async{
-    UserInfor userInfor = await DatabaseRealTimeService().getInforUser(uid);
+    UserInfor userInfor = await Provider.of<DatabaseRealTimeService>(context, listen: false).getInforUser(uid);
     setState(() {
       user = userInfor;
     });
@@ -57,6 +58,8 @@ class _HomePage extends State<HomePage>{
 
   @override
   Widget build(BuildContext context) {
+    final database = Provider.of<DatabaseRealTimeService>(context);
+    final userName = database.nameUser;
     return Scaffold(
       drawer: NavigationDrawerWidget(),
       body: Builder(
@@ -97,20 +100,26 @@ class _HomePage extends State<HomePage>{
                           Scaffold.of(context).openDrawer();
                         },
                       ),
-                      Text('Ebook Reader',
+                      isOpenSearchBox ? searchBox() : Text('Ebook Reader',
                           style: GoogleFonts.portLligatSans(
                             textStyle: Theme.of(context).textTheme.headline1,
                             fontSize: 30,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
-                          )),
+                          )
+                      ),
                       IconButton(
                         icon: Icon(
                           Icons.search,
                           color: Colors.white,
                           size: 35,
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          print("Thai chay ne");
+                          setState(() {
+                            isOpenSearchBox = !isOpenSearchBox;
+                          });
+                        },
                       ),
                     ],
                   ),
@@ -145,7 +154,7 @@ class _HomePage extends State<HomePage>{
                               ),
                               SizedBox(width: 3,),
                               Text(
-                                user.userName,
+                                userName,
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w700,
@@ -183,6 +192,26 @@ class _HomePage extends State<HomePage>{
           );
         }
       ),
+    );
+  }
+
+  Widget searchBox(){
+    final nameUser = TextEditingController();
+    return Container(
+      width: 200,
+      height: 40,
+      child: TextField(
+        decoration: InputDecoration(
+            focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Color(0xfffbb448), width: 2.0),
+                borderRadius: BorderRadius.circular(15)),
+            border: OutlineInputBorder(
+              borderSide: const BorderSide(color: Color(0xfffbb448), width: 2.0),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            fillColor: Color(0xfff3f3f4),
+            filled: true),
+        controller:  nameUser,),
     );
   }
 }

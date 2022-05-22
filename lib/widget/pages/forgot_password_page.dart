@@ -1,27 +1,25 @@
+import 'package:ebook_reader/service/authen.dart';
 import 'package:ebook_reader/widget/loading_widget_2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ebook_reader/service/authen.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../service/database_service.dart';
-import 'home_page.dart';
-import 'login_page.dart';
 
-class SignUpPage extends StatefulWidget {
+class ForgotPassword extends StatefulWidget {
+  static const routeName = '/ForgotPassword';
   @override
-  _SignUpPageState createState() => _SignUpPageState();
+  _ForgotPassword createState() => _ForgotPassword();
 }
 
-class _SignUpPageState extends State<SignUpPage> {
+class _ForgotPassword extends State<ForgotPassword> {
   final AuthService _auth = AuthService();
   String error = '';
-  bool registerSuccess = false;
   late String email;
-  late String password;
   bool loading = false;
-  bool _passwordVisible = false;
   final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+
+  void validateEmail(String email){
+
+  }
 
   Widget _backButton() {
     return InkWell(
@@ -43,33 +41,7 @@ class _SignUpPageState extends State<SignUpPage> {
       ),
     );
   }
-  Widget _entryField(String title, {bool isPassword = false}) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            title,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          TextField(
-            obscureText: isPassword,
-            decoration: InputDecoration(
-                border: InputBorder.none,
-                fillColor: Color(0xfff3f3f4),
-                filled: true),
-            controller: isPassword ? passwordController : emailController,
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget _entryPasswordField(String title) {
+  Widget _entryField(String title) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -83,30 +55,21 @@ class _SignUpPageState extends State<SignUpPage> {
             height: 10,
           ),
           TextFormField(
-              obscureText: !_passwordVisible,
-              decoration: InputDecoration(
-                  border: InputBorder.none,
-                  fillColor: Color(0xfff3f3f4),
-                  filled: true,
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _passwordVisible
-                          ? Icons.visibility : Icons.visibility_off,
-                      color: Color(0xFFFF7643),
-                    ),
-                    onPressed: (){
-                      setState(() {
-                        _passwordVisible = !_passwordVisible;
-                      });
-                    },
-                  )),
-              controller: passwordController,
-              validator:  (value){
-                if(value == null || value.isEmpty){
-                  return 'Yêu cầu nhập!';
-                }
-                return null;
+            decoration: InputDecoration(
+                border: InputBorder.none,
+                fillColor: Color(0xfff3f3f4),
+                filled: true),
+            controller: emailController,
+            keyboardType: TextInputType.emailAddress,
+            validator:  (value){
+              if(value == null || value.isEmpty){
+                return 'Bạn hãy nhập email đã đăng ký!';
               }
+              if(!RegExp(r'\S+@\S+\.\S+').hasMatch(value)){
+                return 'Hãy nhập email hợp lệ!';
+              }
+              return null;
+            },
           )
         ],
       ),
@@ -133,78 +96,35 @@ class _SignUpPageState extends State<SignUpPage> {
                 end: Alignment.centerRight,
                 colors: [Color(0xfffbb448), Color(0xfff7892b)])),
         child: Text(
-          'Đăng ký',
+          'Gửi',
           style: TextStyle(fontSize: 20, color: Colors.white),
         ),
       ),
-      onTap: () async{
+      onTap: () async {
         setState(() {
           loading = true;
         });
         email = emailController.text;
-        password = passwordController.text;
-        dynamic result = await _auth.registerWithEmailAndPassword(email, password);
-        if(result == null) {
-          setState(() {
-            loading = false;
-            error = 'Ôi không đã xảy ra lỗi, hãy thử lại !';
-          });
-        }else{
-          dynamic result = await _auth.signInWithEmailAndPassword(email, password);
-          if(result == null) {
-            setState(() {
-              loading = false;
-            });
-          }else{
-            FirebaseAuth auth = FirebaseAuth.instance;
-            String? uid  = auth.currentUser?.uid;
-            DatabaseRealTimeService().addNewUser(uid!, email);
-            loading = false;
-            Navigator.of(context).pushNamed(HomePage.routeName);
-          }
-        }
-      },
-    );
-  }
-
-  Widget _loginAccountLabel() {
-    return InkWell(
-      onTap: () {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => LoginPage()));
-      },
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 20),
-        padding: EdgeInsets.all(15),
-        alignment: Alignment.bottomCenter,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const <Widget>[
-            Text(
-              'Bạn đã có tài khoản ?',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            Text(
-              'Đăng nhập',
-              style: TextStyle(
-                  color: Color(0xfff79c4f),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
-      ),
+        await _auth.forgotPassword(email);
+        setState(() {
+          loading = false;
+        });
+        final snackBar = SnackBar(
+          content: const Text('Hãy kiểm tra hòm thư của bạn!'),
+          action: SnackBarAction(
+            label: 'OK bạn!',
+            onPressed: () {},
+          ),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
     );
   }
 
   Widget _emailPasswordWidget() {
     return Column(
       children: <Widget>[
-        _entryField("Email"),
-        _entryPasswordField("Mật khẩu"),
+        _entryField("Hãy nhập email đã đăng ký"),
       ],
     );
   }
@@ -225,7 +145,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     SizedBox(height: height * .2),
-                    Text('Ebook Reader',
+                    Text('Quên mật khẩu',
                         style: GoogleFonts.portLligatSans(
                           textStyle: Theme.of(context).textTheme.headline1,
                           fontSize: 30,
@@ -244,8 +164,6 @@ class _SignUpPageState extends State<SignUpPage> {
                     Text(
                       error,
                       style: TextStyle(color: Colors.red, fontSize: 14.0),),
-                    SizedBox(height: height * .14),
-                    _loginAccountLabel(),
                   ],
                 ),
               ),

@@ -1,6 +1,10 @@
+import 'package:ebook_reader/widget/pages/welcome_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../main.dart';
 import '../../models/user_model.dart';
 import '../../service/database_service.dart';
 import '../profile_item.dart';
@@ -24,23 +28,25 @@ class _ProfilePage extends State<ProfilePage>{
   }
 
   void _getInforUser(String uid) async{
-    UserInfor userInfor = await DatabaseRealTimeService().getInforUser(uid);
+    UserInfor userInfor = await Provider.of<DatabaseRealTimeService>(context, listen: false).getInforUser(uid);
     setState(() {
       user = userInfor;
     });
   }
 
-  void _logout(BuildContext context, VoidCallback press) {
+  void _logout(BuildContext context) {
     showDialog(
         context: context,
         builder: (BuildContext ctx) {
           return AlertDialog(
             title: const Text('Xác nhận'),
-            content: const Text('Bạn muốn thoát khỏi ứng dụng ?'),
+            content: const Text('Thoát khỏi ứng dụng ?'),
             actions: [
               // The "Yes" button
               TextButton(
-                  onPressed: () {press;},
+                  onPressed: () {
+                    _signOut();
+                    },
                   child: const Text('Thoát')),
               TextButton(
                   onPressed: () {
@@ -54,6 +60,8 @@ class _ProfilePage extends State<ProfilePage>{
 @override
   Widget build(BuildContext context) {
   var size = MediaQuery.of(context).size;
+  final database = Provider.of<DatabaseRealTimeService>(context);
+  final userName = database.nameUser;
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -111,7 +119,7 @@ class _ProfilePage extends State<ProfilePage>{
                 ),
                 SizedBox(height: 15),
                 Text(
-                  user.userName,
+                  userName,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
@@ -129,7 +137,7 @@ class _ProfilePage extends State<ProfilePage>{
                   text: "Đăng xuất",
                   icon: Icons.logout,
                   press: () {
-                    _logout(context,_signOut);
+                    _logout(context);
                   },
                 ),
               ],
@@ -139,13 +147,15 @@ class _ProfilePage extends State<ProfilePage>{
       )
     );
   }
-void _signOut() {
+void _signOut() async{
   FirebaseAuth.instance.signOut();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.remove('email');
+  prefs.remove('pass');
   runApp(
       new MaterialApp(
-        home: new LoginPage(),
+        home: new MyApp(""),
       )
-
   );
 }
 }

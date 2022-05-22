@@ -1,7 +1,13 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:ebook_reader/service/database_service.dart';
+import 'package:ebook_reader/widget/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
+import '../../models/book_model.dart';
+import '../../models/chapter_book_model.dart';
+import '../../models/content_book_model.dart';
 import '../chapter_book_widget.dart';
 
 class ListeningPage extends StatefulWidget {
@@ -13,26 +19,69 @@ class ListeningPage extends StatefulWidget {
 
 class _AudioFileState extends State<ListeningPage> {
   final AudioPlayer advancedPlayer = AudioPlayer();
-  final String audioPath = "https://firebasestorage.googleapis.com/v0/b/ebookreader-5bd9b.appspot.com/o/dptk123.mp3?alt=media&token=774f8250-9610-4ed6-a38d-189fec46f419";
+  String audioPath = "";
+  late final List<ChapterBook> chapterList;
+  String nameOfChapter ="";
+  int currentChapter = 0;
+  PreviewBook currentBook = PreviewBook.emtpy();
   Duration _duration = const Duration();
   Duration _position = const Duration();
   bool isPlaying=false;
-  bool isPaused=false;
-  bool isRepeat=false;
   double currentSpeed = 1;
   Color color= Colors.black;
   List<IconData> _icons = [
     Icons.play_circle_fill,
     Icons.pause_circle_filled,
   ];
+  bool loading = true;
   late Map recieverMap = Map();
 
   @override
   void initState(){
     super.initState();
-    Future.delayed(Duration.zero,() {
+    Future.delayed(Duration.zero,() async{
       recieverMap = ModalRoute.of(context)?.settings.arguments as Map;
+      _getAudioOfChapter(recieverMap['idBook'], recieverMap['idChapter']);
+      _getBook(recieverMap['idBook']);
     });
+    Future.delayed(Duration(milliseconds: 500),(){
+      initAudio();
+    });
+
+  }
+
+  @override
+  void dispose() {
+    advancedPlayer.release();
+    super.dispose();
+  }
+
+  void _getAudioOfChapter(String idBook, String idChapter) async{
+    ContentBook contentBook = await Provider.of<DatabaseRealTimeService>(context,listen: false).getContentChapter(idBook, idChapter);
+    setState(() {
+      audioPath = contentBook.contentAudio!;
+      currentChapter = contentBook.numberOfChapter!;
+    });
+  }
+  void _getBook(String idBook) async{
+    PreviewBook book = await Provider.of<DatabaseRealTimeService>(context, listen: false).getBookById(idBook);
+    setState(() {
+      currentBook = book;
+      loading = false;
+    });
+  }
+
+  void getAudioNextOrPrevious(String idBook,int number) async{
+    advancedPlayer.release();
+    String? urlAudio = await Provider.of<DatabaseRealTimeService>(context, listen: false).getAudioChapterByNumberOfChap(idBook, number);
+    setState(() {
+      audioPath = urlAudio;
+      initAudio();
+    });
+  }
+
+  void initAudio(){
+    advancedPlayer.setUrl(audioPath, isLocal: false);
     advancedPlayer.onDurationChanged.listen((d) {setState(() {
       _duration = d;
     });});
@@ -40,13 +89,12 @@ class _AudioFileState extends State<ListeningPage> {
       _position = p;
     });
     });
-    advancedPlayer.setUrl(audioPath, isLocal: false);
   }
 
   Widget btnStart() {
     return IconButton(
       padding: const EdgeInsets.only(bottom: 15),
-      icon:isPlaying==false?Icon(_icons[0], size:50, color: Color(0xFFFF7643)):Icon(_icons[1], size:50, color:Colors.blue),
+      icon:isPlaying==false? Icon(_icons[0], size:50, color: Color(0xFFFF7643)):Icon(_icons[1], size:50, color:Colors.blue),
       onPressed: (){
         if(isPlaying==false) {
           advancedPlayer.play(audioPath, isLocal: false);
@@ -63,20 +111,48 @@ class _AudioFileState extends State<ListeningPage> {
     );
   }
 
-  Widget btnFast() {
-    return
-      IconButton(
+  Widget btnNextChapter() {
+    return IconButton(
         icon: Icon(Icons.keyboard_double_arrow_right_rounded),
         onPressed: () {
-          advancedPlayer.setPlaybackRate(1.5);
+          if(currentChapter < (recieverMap['listChapter'] as List<ChapterBook>).length){
+            getAudioNextOrPrevious(recieverMap['idBook'], currentChapter + 1);
+            setState(() {
+              isPlaying = false;
+            });
+          }else{
+            final snackBar = SnackBar(
+              content: const Text('Đây là chương cuối cùng nha :> !'),
+              action: SnackBarAction(
+                label: 'OK bạn!',
+                onPressed: () {},
+              ),
+            );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
+
         },
       );
   }
-  Widget btnSlow() {
+  Widget btnPreviousChapter() {
     return IconButton(
       icon:  Icon(Icons.keyboard_double_arrow_left_rounded),
       onPressed: () {
-        advancedPlayer.setPlaybackRate(0.5);
+        if(currentChapter > 1){
+          getAudioNextOrPrevious(recieverMap['idBook'], currentChapter - 1);
+          setState(() {
+            isPlaying = false;
+          });
+        }else{
+          final snackBar = SnackBar(
+            content: const Text('Đây là chương đầu tiên!'),
+            action: SnackBarAction(
+              label: 'OK bạn!',
+              onPressed: () {},
+            ),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
       },
     );
   }
@@ -85,7 +161,7 @@ class _AudioFileState extends State<ListeningPage> {
     return MaterialButton(
       child: Text(changeSpeed(speed), style: TextStyle(fontSize: 10),),
       color: Colors.grey,
-      onPressed: () {
+      onPressed: !isPlaying ? null : () {
           setState(() {
             print(currentSpeed);
             if(currentSpeed == 2) {
@@ -133,18 +209,23 @@ class _AudioFileState extends State<ListeningPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children:[
-                btnSlow(),
+                btnPreviousChapter(),
                 btnStart(),
-                btnFast(),
+                btnNextChapter(),
               ])
       );
   }
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
+    final database = Provider.of<DatabaseRealTimeService>(context);
+    setState(() {
+      nameOfChapter = database.nameOfChapter;
+      currentChapter = database.numberOfChap;
+    });
     return Scaffold(
       body: SafeArea(
-      child: Container(
+      child: loading ? Loading() : Container(
           decoration: BoxDecoration(
               gradient: LinearGradient(
                   colors: [Color.fromRGBO(249, 191, 161, 1), Colors.white],
@@ -172,7 +253,6 @@ class _AudioFileState extends State<ListeningPage> {
                           child: Container(
                             padding:
                             EdgeInsets.all(constraints.maxHeight * 0.18),
-                            //color: Colors.black,
                             height: constraints.maxHeight * 0.8,
                             width: constraints.maxWidth * 0.15,
                             child: FittedBox(
@@ -235,7 +315,7 @@ class _AudioFileState extends State<ListeningPage> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: Image.network(
-                        'https://firebasestorage.googleapis.com/v0/b/ebookreader-5bd9b.appspot.com/o/dauladailuc.jpeg?alt=media&token=98484a25-b672-401c-8440-a62113b2e596',
+                        currentBook.coverImage,
                         loadingBuilder: (context, child, loadingProgress) => loadingProgress == null
                             ? child
                             : Container(
@@ -250,7 +330,7 @@ class _AudioFileState extends State<ListeningPage> {
                   SizedBox(
                     height: 50,
                   ),
-                Text("Chương ${recieverMap['numberOfChapter'] ?? ''} : ${recieverMap['chapterName'] ?? ''}",
+                Text("Chương $currentChapter : $nameOfChapter",
                   style: GoogleFonts.lato(
                       fontWeight: FontWeight.bold,
                       color: Color.fromRGBO(66, 66, 86, 1)),
@@ -260,7 +340,6 @@ class _AudioFileState extends State<ListeningPage> {
                     padding: const EdgeInsets.only(left: 20, right: 20),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
                       children: [
                         Text(_position.toString().split(".")[0], style: TextStyle(fontSize: 16),),
 

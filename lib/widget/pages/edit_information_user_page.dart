@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../models/user_model.dart';
 import '../../service/database_service.dart';
 import 'login_page.dart';
@@ -15,6 +16,7 @@ class _EditInformation extends State<EditInformation>{
   String? uid  = '';
   final nameUser = TextEditingController();
   final email = TextEditingController();
+  bool isUpdate = false;
   UserInfor user = UserInfor.emtpy();
   @override
   void initState() {
@@ -24,19 +26,28 @@ class _EditInformation extends State<EditInformation>{
   }
 
   void _getInforUser(String uid) async{
-    UserInfor userInfor = await DatabaseRealTimeService().getInforUser(uid);
+    UserInfor userInfor = await Provider.of<DatabaseRealTimeService>(context, listen: false).getInforUser(uid);
     setState(() {
       user = userInfor;
       email.text = user.email;
       nameUser.text = user.userName;
     });
   }
+
+  void _setLoading(){
+    setState(() {
+      isUpdate = !isUpdate;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
         body: SafeArea(
-          child: SingleChildScrollView(
+          child: isUpdate ? Center(
+            child: CircularProgressIndicator(),
+          ) : SingleChildScrollView(
             child: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -171,8 +182,19 @@ class _EditInformation extends State<EditInformation>{
         ),
       ),
       onTap: () async{
+        final snackBar1 = SnackBar(
+          content: const Text('Đã cập nhật thành công!'),
+          action: SnackBarAction(
+            label: 'OK bạn!',
+            onPressed: () {},
+          ),
+        );
         if(nameUser.text != ""){
-          DatabaseRealTimeService().changeNameUser(uid!, nameUser.text);
+          _setLoading();
+          Provider.of<DatabaseRealTimeService>(context, listen: false).changeNameUser(uid!, nameUser.text).then((value) =>{
+            _setLoading(),
+            ScaffoldMessenger.of(context).showSnackBar(snackBar1)
+          });
         }else{
           final snackBar = SnackBar(
             content: const Text('Xin đừng để tên trống!'),
@@ -184,15 +206,6 @@ class _EditInformation extends State<EditInformation>{
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
       },
-    );
-  }
-  void _signOut() {
-    FirebaseAuth.instance.signOut();
-    runApp(
-        new MaterialApp(
-          home: new LoginPage(),
-        )
-
     );
   }
 }

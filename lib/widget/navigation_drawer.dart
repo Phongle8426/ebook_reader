@@ -5,6 +5,7 @@ import 'package:ebook_reader/widget/pages/saved_book_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/user_model.dart';
 import '../service/database_service.dart';
 
@@ -23,7 +24,7 @@ class _NavigationDrawerWidget extends State<NavigationDrawerWidget>{
     super.initState();
   }
   void _getInforUser(String uid) async{
-    UserInfor userInfor = await DatabaseRealTimeService().getInforUser(uid);
+    UserInfor userInfor = await Provider.of<DatabaseRealTimeService>(context, listen: false).getInforUser(uid);
     setState(() {
       user = userInfor;
     });
@@ -32,7 +33,8 @@ class _NavigationDrawerWidget extends State<NavigationDrawerWidget>{
   Widget build(BuildContext context) {
     final urlImage =
         'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80';
-
+    final database = Provider.of<DatabaseRealTimeService>(context);
+    final userName = database.nameUser;
     return Drawer(
       child: Material(
         color: Color.fromRGBO(220, 167, 56, 1.0),
@@ -40,7 +42,7 @@ class _NavigationDrawerWidget extends State<NavigationDrawerWidget>{
           children: <Widget>[
             buildHeader(
               urlImage: urlImage,
-              name: user.userName,
+              name: userName,
               email: user.email,
               onClicked: () => {
                 Navigator.of(context).pushNamed(ProfilePage.routeName)
