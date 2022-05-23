@@ -21,10 +21,12 @@ class HomePage extends StatefulWidget {
 class _HomePage extends State<HomePage>{
   List<PreviewBook> _recentBooks = [];
   List<PreviewBook> _trendingBooks = [];
+  List<PreviewBook> _resultSearchBook = [];
   UserInfor user = UserInfor.emtpy();
   String userName = "";
   bool loading = true;
   bool isOpenSearchBox = false;
+  bool isSearch = false;
   @override
   void initState() {
     FirebaseAuth auth = FirebaseAuth.instance;
@@ -53,6 +55,22 @@ class _HomePage extends State<HomePage>{
     UserInfor userInfor = await Provider.of<DatabaseRealTimeService>(context, listen: false).getInforUser(uid);
     setState(() {
       user = userInfor;
+    });
+  }
+
+  void searchMethod(String text){
+    print("TEXT:  $text");
+    _resultSearchBook.clear();
+    List<PreviewBook> listBook = [];
+    for(var data in _trendingBooks){
+      if(data.name.contains(text)){
+        listBook.add(data);
+      }
+    }
+    Future.delayed(Duration(seconds: 1),() {
+      setState(() {
+        _resultSearchBook = listBook;
+      });
     });
   }
 
@@ -110,14 +128,14 @@ class _HomePage extends State<HomePage>{
                       ),
                       IconButton(
                         icon: Icon(
-                          Icons.search,
+                          isOpenSearchBox ? Icons.close : Icons.search,
                           color: Colors.white,
                           size: 35,
                         ),
                         onPressed: () {
-                          print("Thai chay ne");
                           setState(() {
                             isOpenSearchBox = !isOpenSearchBox;
+                              isSearch = !isSearch;
                           });
                         },
                       ),
@@ -174,14 +192,15 @@ class _HomePage extends State<HomePage>{
                               color: Color(0xffc44536),
                             ),
                           ),
-                          RecentBook(_recentBooks),
-                          Text('Top truyện đọc nhiều',
+                          isSearch ? SizedBox(height: 0,) : RecentBook(_recentBooks),
+                          Text(isSearch ? 'Kết quả tìm kiếm' : 'Top truyện đọc nhiều',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          TrendingBook(_trendingBooks)
+                          isSearch ? TrendingBook(_resultSearchBook)
+                              : TrendingBook(_trendingBooks)
                         ],
                       ),
                     ),
@@ -196,6 +215,7 @@ class _HomePage extends State<HomePage>{
   }
 
   Widget searchBox(){
+    print("CHay search");
     final nameUser = TextEditingController();
     return Container(
       width: 200,
@@ -211,7 +231,10 @@ class _HomePage extends State<HomePage>{
             ),
             fillColor: Color(0xfff3f3f4),
             filled: true),
-        controller:  nameUser,),
+        controller:  nameUser,
+      onChanged: (text){
+        searchMethod(text);
+      },),
     );
   }
 }

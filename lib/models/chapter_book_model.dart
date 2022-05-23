@@ -12,6 +12,5 @@ class ChapterBook {
   factory ChapterBook.fromRTDB(Map<String, dynamic> data){
     return ChapterBook(data['idChapter'], data['chapterName'], data['numberOfChapter']);
   }
-
 }
 

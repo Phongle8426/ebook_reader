@@ -481,7 +481,7 @@ class _PreviewPage extends State<PreviewPage>{
                     width: size.width,
                     child: Center(
                         child: Text(
-                          DataDemo.textDemo,
+                          _book.description,
                           overflow: TextOverflow.fade,
                           style: TextStyle(
                                 fontWeight: FontWeight.w300,
